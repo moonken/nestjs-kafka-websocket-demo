@@ -1,4 +1,4 @@
-import {KafkaClient, KeyedMessage, Producer, HighLevelProducer, Consumer, ConsumerGroup} from 'kafka-node';
+import {ConsumerGroup, KafkaClient} from 'kafka-node';
 import {CustomTransportStrategy, Server} from '@nestjs/microservices';
 
 export class KafkaServer extends Server implements CustomTransportStrategy {
@@ -14,9 +14,16 @@ export class KafkaServer extends Server implements CustomTransportStrategy {
     }
 
     public start(callback?: () => void) {
-        let handlers = this.getHandlers();
-        const keys = Array.from(handlers.keys())
-            .filter(pattern => JSON.parse(pattern).topic);
+        const handlers = this.getHandlers();
+        const topicToHandler = new Map();
+
+        Array.from(handlers.keys())
+            .forEach(pattern => {
+                const topic = JSON.parse(pattern).topic;
+                if (topic) {
+                    topicToHandler.set(topic, handlers.get(pattern));
+                }
+            });
 
         const consumer = new ConsumerGroup(
             {
@@ -26,12 +33,12 @@ export class KafkaServer extends Server implements CustomTransportStrategy {
                 id: 'consumer1',
                 fromOffset: 'latest',
             },
-            keys.map(pattern => JSON.parse(pattern).topic),
+            Array.from(topicToHandler.keys()),
         );
 
-        consumer.on('message',  (message) => {
-            console.log(message);
-            handlers.get(JSON.stringify({topic: message.topic}))(message);
+        consumer.on('message', (message) => {
+            console.log('received: ', message);
+            topicToHandler.get(message.topic)(message);
         });
 
         callback();

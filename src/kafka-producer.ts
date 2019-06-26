@@ -9,11 +9,15 @@ export class KafkaProducer implements OnModuleDestroy {
     private cachedPayloads = [];
 
     constructor() {
+        console.log('producer created');
         this.client = new KafkaClient({kafkaHost: 'localhost:9092'});
         this.producer = new HighLevelProducer(this.client);
         this.producer.on('ready',  () => {
             this.isReady = true;
-            this.producer.send(this.cachedPayloads, (err, d) => {
+            this.producer.send(this.cachedPayloads, (err) => {
+                if (err) {
+                    console.error(err);
+                }
                 this.cachedPayloads = [];
             });
         });
@@ -29,8 +33,10 @@ export class KafkaProducer implements OnModuleDestroy {
 
     public send(topic: string, message: string) {
         if (this.isReady) {
-            this.producer.send([{ topic, messages: message}], (err, d) => {
-                this.cachedPayloads = [];
+            this.producer.send([{topic, messages: message}], (err) => {
+                if (err) {
+                    console.error(err);
+                }
             });
         } else {
             this.cachedPayloads.push({ topic, messages: message});

@@ -1,8 +1,6 @@
 import {Controller, Get} from '@nestjs/common';
 import {AppService} from './app.service';
-import {MessagePattern} from '@nestjs/microservices';
-import {Message} from 'kafka-node';
-import {KafkaProducer} from './microservices/client/kafka-producer';
+import {KafkaProducer} from './kafka-producer';
 
 @Controller()
 export class AppController {
@@ -15,12 +13,7 @@ export class AppController {
 
     @Get()
     getHello(): string {
-        this.kafkaProducer.send('t', 'hihihi');
+        this.kafkaProducer.send('test', 'hihihi');
         return this.appService.getHello();
-    }
-
-    @MessagePattern({topic: 't'})
-    showMessage(message: Message): void {
-        console.log(message);
     }
 }
