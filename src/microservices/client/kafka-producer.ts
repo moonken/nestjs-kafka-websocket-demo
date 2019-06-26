@@ -1,7 +1,6 @@
 import {HighLevelProducer, KafkaClient} from 'kafka-node';
-import {Injectable, OnModuleDestroy} from '@nestjs/common';
+import {OnModuleDestroy} from '@nestjs/common';
 
-@Injectable()
 export class KafkaProducer implements OnModuleDestroy {
     private client: KafkaClient;
     private producer: HighLevelProducer;

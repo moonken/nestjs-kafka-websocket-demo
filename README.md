@@ -35,3 +35,6 @@ $ npm run test:cov
 
 ## Test
 open test.html on local browser for test WebSocket
+```$xslt
+open test.html
+```

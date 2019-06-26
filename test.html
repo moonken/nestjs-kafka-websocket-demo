@@ -13,15 +13,15 @@
         name: 'world'
       });
     });
-    
+
     socket.on('hello', (data) => {
-      console.log(data.msg)
+        document.body.innerHTML += JSON.stringify(data) + '<br>';
     });
 
     socket.on('response', (data) => {
-      console.log(data.msg)
+        document.body.innerHTML+= JSON.stringify(data) + '<br>';
     });
   </script>
  </header>
- 
+
   </html>

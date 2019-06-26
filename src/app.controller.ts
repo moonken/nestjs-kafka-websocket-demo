@@ -1,13 +1,12 @@
 import {Controller, Get} from '@nestjs/common';
 import {AppService} from './app.service';
-import {KafkaProducer} from './kafka-producer';
+import {KafkaProducer} from './microservices/client/kafka-producer';
 
 @Controller()
 export class AppController {
-
+    private readonly kafkaProducer = new KafkaProducer();
     constructor(
         private readonly appService: AppService,
-        private readonly kafkaProducer: KafkaProducer,
     ) {
     }
 
